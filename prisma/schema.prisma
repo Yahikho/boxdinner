@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Categories {
+  @@map(name : "categories")
+  id Int @id @default(autoincrement()) @unique
+  name String @unique
+  active Boolean @default(true)
+  create_at DateTime @default(now())
+  update_at DateTime? @updatedAt
+}
+
+model Products{
+  @@map(name : "products")
+  id Int @id @default(autoincrement())
+  name String @unique
+  quantity_unit Int @default(0)
+  price_sale Decimal
+  active Boolean @default(true)
+  create_at DateTime @default(now())
+  update_at DateTime? @updatedAt
+  sales ProductsOnSales[]
+  returnedProduct ReturnedProducts[]
+}
+
+model Sales{
+  @@map(name : "sales")
+  id BigInt @id @default(autoincrement())
+  fake Boolean
+  create_at DateTime @default(now())
+  update_at DateTime? @updatedAt
+  sales ProductsOnSales[]
+}
+
+model ProductsOnSales {
+  @@map(name : "produs_on_sales")
+  product Products @relation(fields: [productId], references: [id])
+  productId Int
+  sale Sales @relation(fields: [saleId], references: [id])
+  saleId BigInt
+  quantity Int
+  total Decimal
+
+  @@id([productId, saleId])
+}
+
+model ReturnedProducts{
+  @@map(name : "returned_products")
+  id Int @id @default(autoincrement())
+  quantity Int
+  product Products @relation(fields: [productId], references: [id])
+  productId Int
+}
