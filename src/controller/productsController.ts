@@ -8,7 +8,9 @@ import {
     updateProduct as updateProductService,
     getProductByName as getProductByNameService,
     subtractQuantityProduct as subtractQuantityProductService,
-    addQuantityProduct as addQuantityProductService
+    addQuantityProduct as addQuantityProductService,
+    getProductsByCaregory as getProductsByCaregoryService,
+    updateProductByCategory as updateProductByCategoryService
 } from "../services/productsService";
 import { getCategory as getCategoryService } from "../services/categoriesService";
 import { roudedPrice } from "../utils/roudedPrices";
@@ -55,7 +57,6 @@ export const createProduct = async (req: Request, res: Response) => {
         const body: Products = req.body;
         const searchProduct = await getProductByNameService(body.name);
         const generatePrice = await generatePrices(body);
-
         if(searchProduct.length > 0){
             res.status(200);
             res.json({
@@ -138,12 +139,30 @@ export const addQuantityProduct = async (id: number, quantity: number) => {
     }
 }
 
-async function generatePrices(product: Products){
+export const generatePrices = async (product: Products) => {
     const prices = [];
-    const categoryId: Categories[] = await getCategoryService(product.categoryId);
-    const priceIva: number =  Number(product.arrival_price) + (Number(product.arrival_price) * Number(categoryId[0].iva));
+    const category: Categories[] = await getCategoryService(product.categoryId);
+    const iva = generatePorIVA(Number(category[0].iva));
+    const priceIva: number =  Number(product.arrival_price) + (Number(product.arrival_price) * iva);
     const rouded = roudedPrice(priceIva);
     prices.push(Math.round(priceIva), Math.round(rouded));
     return prices;
      
+}
+
+export const generatePorIVA = (iva: number): number => {
+    const converIva =  Number(`0.${iva.toString()}`);
+    return converIva;
+}
+
+export const productsByCaregory = async (categoryId: number) => {
+    return await getProductsByCaregoryService(categoryId);
+}
+
+export const updateProductByCategory = async (id: number, data: any) => {
+    return await updateProductByCategoryService(id,data);
+}
+
+export const updateProductAntiveSale = async (id: number, data: Products) => {
+    return  await updateProductService(id,data);
 }

@@ -3,7 +3,7 @@ CREATE TABLE `categories` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `active` BOOLEAN NOT NULL DEFAULT true,
-    `iva` DECIMAL(65, 30) NOT NULL DEFAULT 0.10,
+    `iva` INTEGER NOT NULL DEFAULT 10,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `update_at` DATETIME(3) NULL,
 
@@ -48,7 +48,7 @@ CREATE TABLE `produs_on_sales` (
     `saleId` BIGINT NULL,
     `quantity` INTEGER NOT NULL,
     `total` DECIMAL(65, 30) NOT NULL,
-    `active` BOOLEAN NOT NULL DEFAULT false,
+    `active` BOOLEAN NOT NULL DEFAULT true,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

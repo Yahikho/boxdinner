@@ -15,7 +15,7 @@ model Categories {
   id Int @id @default(autoincrement()) @unique
   name String @unique
   active Boolean @default(true)
-  iva Decimal @default(0.10)
+  iva Int @default(10)
   create_at DateTime @default(now())
   update_at DateTime? @updatedAt
   products Products[]
@@ -57,7 +57,7 @@ model ProductsOnSales {
   saleId BigInt?
   quantity Int
   total Decimal
-  active Boolean @default(false)
+  active Boolean @default(true)
 }
 
 model ReturnedProducts{

@@ -67,3 +67,26 @@ export const addQuantityProduct = async (id: number, quantity: number): Promise<
     });
 }
 
+export const getProductsByCaregory = async (categoryId: number):Promise<Products[]> =>{
+    return await prisma.products.findMany({
+        where: {
+            categoryId
+        }
+    });
+}
+
+export const updateProductByCategory = async (id: number, prices: any): Promise<Products> => {
+    return await prisma.products.update({
+        where: {
+            id
+        },
+        data: {
+            price_iva: prices[0],
+            price_sale: prices[1],
+        }
+    });
+}
+
+
+
+
