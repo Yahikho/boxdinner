@@ -15,17 +15,24 @@ model Categories {
   id Int @id @default(autoincrement()) @unique
   name String @unique
   active Boolean @default(true)
+  iva Decimal @default(0.10)
   create_at DateTime @default(now())
   update_at DateTime? @updatedAt
+  products Products[]
 }
 
 model Products{
   @@map(name : "products")
   id Int @id @default(autoincrement())
+  code String @unique
   name String @unique
   quantity_unit Int @default(0)
+  price_iva Decimal
+  arrival_price Decimal
   price_sale Decimal
   active Boolean @default(true)
+  categories Categories @relation(fields: [categoryId], references: [id])
+  categoryId Int
   create_at DateTime @default(now())
   update_at DateTime? @updatedAt
   sales ProductsOnSales[]
@@ -35,22 +42,22 @@ model Products{
 model Sales{
   @@map(name : "sales")
   id BigInt @id @default(autoincrement())
-  fake Boolean
+  active Boolean
   create_at DateTime @default(now())
   update_at DateTime? @updatedAt
   sales ProductsOnSales[]
 }
 
 model ProductsOnSales {
-  @@map(name : "produs_on_sales")
-  product Products @relation(fields: [productId], references: [id])
-  productId Int
-  sale Sales @relation(fields: [saleId], references: [id])
-  saleId BigInt
+  @@map(name : "produs_on_sales") 
+  id BigInt @id @default(autoincrement())
+  product Products? @relation(fields: [productId], references: [id])
+  productId Int?
+  sale Sales? @relation(fields: [saleId], references: [id])
+  saleId BigInt?
   quantity Int
   total Decimal
-
-  @@id([productId, saleId])
+  active Boolean @default(false)
 }
 
 model ReturnedProducts{

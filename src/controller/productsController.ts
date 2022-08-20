@@ -1,0 +1,149 @@
+import { Request, Response } from "express";
+import { Categories, Products } from "@prisma/client";
+
+import { 
+    getProducts as getProductsService, 
+    getProduct as getProductService,
+    createProduct as createProductService,
+    updateProduct as updateProductService,
+    getProductByName as getProductByNameService,
+    subtractQuantityProduct as subtractQuantityProductService,
+    addQuantityProduct as addQuantityProductService
+} from "../services/productsService";
+import { getCategory as getCategoryService } from "../services/categoriesService";
+import { roudedPrice } from "../utils/roudedPrices";
+
+export const getProducts = async (_req:Request, res:Response) => {
+    try{
+        const products = await getProductsService();
+        res.status(200);
+        res.json({
+            response: true,
+            message : 'true',
+            data: products
+        });
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+}
+
+export const getProduct = async (req: Request, res: Response) => {
+    try{
+        const id = req.params.id
+        const product = await getProductService(Number(id))
+        res.status(400);
+        res.json({
+            response: true,
+            message : "true",
+            data: product
+        });
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+}
+
+export const createProduct = async (req: Request, res: Response) => {
+    try{
+        const body: Products = req.body;
+        const searchProduct = await getProductByNameService(body.name);
+        const generatePrice = await generatePrices(body);
+
+        if(searchProduct.length > 0){
+            res.status(200);
+            res.json({
+                response: false,
+                message: "Ese nombre de producto ya existe.",
+            });
+        }else{
+            const product = await createProductService(body, generatePrice);
+            res.status(201);
+            res.json({
+                response: true,
+                message: "Producto creado.",
+                data: product
+            });
+        }       
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+}
+
+export const updateProduct = async (req: Request, res: Response) => {
+    try{
+
+        const id = Number(req.params.id);
+        const data: Products = req.body;
+
+        const searchProduct = await getProductByNameService(data.name);
+        if(searchProduct.length > 0 && searchProduct[0].name !== data.name && searchProduct[0].code !== data.code){
+            res.status(200)
+            .json({
+                response: false,
+                message: "Ese nombre de producto ya existe.",
+            });
+        }else{
+            const product = await updateProductService(id,data);
+            res.status(201)
+            .json({
+                response: true,
+                message: "Producto actualizado con exito.",
+                data: product
+            });
+        }
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+
+}
+
+export const subtractQuantityProduct = async (id: number, quantity: number) => {
+    try{
+        const product = await subtractQuantityProductService(id, quantity)
+        if(product.id > 0){
+            return true;
+        }else{
+            return false
+        }
+    }catch(Error){
+        return false;
+    }
+}
+
+export const addQuantityProduct = async (id: number, quantity: number) => {
+    try{
+        const product = await addQuantityProductService(id, quantity)
+        if(product.id > 0){
+            return true;
+        }else{
+            return false
+        }
+    }catch(Error){
+        return false;
+    }
+}
+
+async function generatePrices(product: Products){
+    const prices = [];
+    const categoryId: Categories[] = await getCategoryService(product.categoryId);
+    const priceIva: number =  Number(product.arrival_price) + (Number(product.arrival_price) * Number(categoryId[0].iva));
+    const rouded = roudedPrice(priceIva);
+    prices.push(Math.round(priceIva), Math.round(rouded));
+    return prices;
+     
+}
