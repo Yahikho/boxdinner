@@ -95,13 +95,23 @@ export const updateProduct = async (req: Request, res: Response) => {
                 message: "Ese nombre de producto ya existe.",
             });
         }else{
-            const product = await updateProductService(id,data);
-            res.status(201)
-            .json({
-                response: true,
-                message: "Producto actualizado con exito.",
-                data: product
-            });
+            const generatePrice = await generatePrices(data);
+            const product = await updateProductService(id,data,generatePrice);
+            if(product.id > 0){
+                res.status(201)
+                .json({
+                    response: true,
+                    message: "Producto actualizado con exito.",
+                    data: product
+                });
+            }else{
+                res.status(200)
+                .json({
+                    response: true,
+                    message: "No se pudo actualiza.",
+                });
+            }
+             
         }
     }catch(Error){
         res.status(500)
@@ -161,8 +171,4 @@ export const productsByCaregory = async (categoryId: number) => {
 
 export const updateProductByCategory = async (id: number, data: any) => {
     return await updateProductByCategoryService(id,data);
-}
-
-export const updateProductAntiveSale = async (id: number, data: Products) => {
-    return  await updateProductService(id,data);
 }

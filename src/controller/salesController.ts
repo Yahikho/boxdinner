@@ -1,20 +1,19 @@
-import { Products, ProductsOnSales, Sales } from "@prisma/client";
+import {Products, ProductsOnSales, Sales } from "@prisma/client";
 import { Request, Response } from "express";
 import { 
     createSale as createSaleService,
     cancelSale as cancelSaleService,
 } from "../services/salesServices";
 import { getProductsOnSales } from "../controller/productsOnSalesController"
-import { updateProductByCategory,
+import { updateProductBySale as updateProductBySaleService,
     getProduct as getProductService
 } from "../services/productsService";
-
 export const cancelSale = async (req:Request, res:Response) => {
     try{
-        const id = BigInt(req.params.id);
+        const id = req.params.id;
         const active = req.body.active;
-        const sale = await cancelSaleService(id, active);
-        const productsOnSales = await getProductsOnSales(sale.id) 
+        const sale = await cancelSaleService(Number(id), active);
+        const productsOnSales = await getProductsOnSales(Number(sale.id), true) 
         if(sale.id > 0){
             if(sale.active){
                 const products = await updatePrices(productsOnSales, true);
@@ -29,7 +28,7 @@ export const cancelSale = async (req:Request, res:Response) => {
                 res.status(201)
                 .json({
                     response: true,
-                    message: "Venta anulado con exito.",
+                    message: "Venta anulada con exito.",
                     data: products
                 });
             }
@@ -57,17 +56,19 @@ export const createSale = async () => {
 async function updatePrices(productsOnSales: ProductsOnSales[], active: boolean){
     const productsUp: Products[] = [];
     if(active){
-        Promise.all(productsOnSales.map(async (element) =>{
-            const product = await getProductService(Number(element.id));
-            const newQuantuty = product[0].quantity_unit + element.quantity;
-            const productUp = await updateProductByCategory(Number(element.id), {quantity_unit : newQuantuty});
+        await Promise.all(productsOnSales.map(async (element) =>{
+            const product = await getProductService(Number(element.productId));
+            const quantity_unit = product[0].quantity_unit;
+            const newQuantuty: number = quantity_unit + element.quantity;
+            const productUp = await updateProductBySaleService(Number(element.productId), newQuantuty);
             productsUp.push(productUp);
         }));
     }else{
-        Promise.all(productsOnSales.map(async (element) =>{
-            const product = await getProductService(Number(element.id));
-            const newQuantuty = product[0].quantity_unit - element.quantity;
-            const productUp = await updateProductByCategory(Number(element.id), {quantity_unit : newQuantuty});
+        await Promise.all(productsOnSales.map(async (element) =>{
+            const product = await getProductService(Number(element.productId));
+            const quantity_unit = product[0].quantity_unit 
+            const newQuantuty: number =  quantity_unit - element.quantity;
+            const productUp = await updateProductBySaleService(Number(element.productId), newQuantuty);
             productsUp.push(productUp);
         }));
     }

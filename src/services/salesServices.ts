@@ -22,7 +22,7 @@ export const createSale = async (active: boolean): Promise<Sales> => {
     });
 }
 
-export const cancelSale = async (id: bigint, active: boolean): Promise<Sales>  => {
+export const cancelSale = async (id: number, active: boolean): Promise<Sales>  => {
     return await prisma.sales.update({
         data: {
             active

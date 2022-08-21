@@ -49,10 +49,10 @@ export const cancelProduct = async (req:Request, res:Response) => {
         const active: boolean = req.body.active;
         const productOnSale = await cancelProductService(productOnSaleId, active);
         let addQuantity: boolean = false;
-        if(active){
-            addQuantity = await addQuantityByProduct(productOnSale.productId || 0, productOnSale.quantity);
-        }else{
+        if(productOnSale.active){
             addQuantity = await subtractQuantityByProduct(productOnSale.productId || 0, productOnSale.quantity);
+        }else{
+            addQuantity = await addQuantityByProduct(productOnSale.productId || 0, productOnSale.quantity);
         }
         if(addQuantity){
             if(productOnSale.id > 0){
@@ -95,14 +95,17 @@ export const cancelProduct = async (req:Request, res:Response) => {
     }
 }
 
-export const getProductsOnSales = async (saleIs: bigint) => {
-    return await getProductsOnSalesService(saleIs);
+export const getProductsOnSales = async (saleIs: number, active: boolean) => {
+    return await getProductsOnSalesService(saleIs, active);
 }
 
 async function createProductsOneToOneSales(id: bigint, products: Product[]){
     const productsOnSales: ProductsOnSales[] = [];
     await Promise.all(products.map(async (element) => {
-        const productSale: ProductsOnSales =  await createProductsOnSalesService(id, element)
+        const product = await getProductService(element.productId);
+        const priceUnit = product[0].price_sale;
+        const total = Number(product[0].price_sale) * element.quantity;
+        const productSale: ProductsOnSales =  await createProductsOnSalesService(id, element, Number(priceUnit), total)
         const updateQuantityProduct: boolean = await subtractQuantityByProduct(element.productId, element.quantity);
         if(updateQuantityProduct){
             productsOnSales.push(productSale);
@@ -125,7 +128,7 @@ async function addQuantityByProduct(idProduct: number, productQuantity: number){
     return rta;
 }
 
-function toJson(data: any){
+export const  toJson = (data: any) => {
     return JSON.stringify(data, (_, v) => typeof v === 'bigint' ? `${v}n` : v)
         .replace(/"(-?\d+)n"/g, (_, a) => a);
 }

@@ -28,12 +28,21 @@ export const createProduct = async (data: Products, prices: any): Promise<Produc
     });
 }
 
-export const updateProduct = async (id: number, data: Products): Promise<Products> => {
+export const updateProduct = async (id: number, data: Products, prices: any): Promise<Products> => {
     return await prisma.products.update({
         where: {
             id
         },
-        data
+        data: {
+            code: data.code,
+            name: data.name,
+            quantity_unit: data.quantity_unit,
+            arrival_price: data.arrival_price,
+            price_iva: prices[0],
+            price_sale: prices[1],
+            categoryId: data.categoryId,
+            active : data.active
+        }
     });
 }
 
@@ -87,6 +96,16 @@ export const updateProductByCategory = async (id: number, prices: any): Promise<
     });
 }
 
+export const updateProductBySale = async (id: number, quantity: number): Promise<Products> => {
+    return await prisma.products.update({
+        where: {
+            id
+        },
+        data:{
+            quantity_unit: quantity
+        }
+    });
+}
 
 
 

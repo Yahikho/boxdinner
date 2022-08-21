@@ -42,20 +42,21 @@ model Products{
 model Sales{
   @@map(name : "sales")
   id BigInt @id @default(autoincrement())
-  active Boolean
+  active Boolean @default(true)
   create_at DateTime @default(now())
   update_at DateTime? @updatedAt
   sales ProductsOnSales[]
 }
 
 model ProductsOnSales {
-  @@map(name : "produs_on_sales") 
+  @@map(name : "products_on_sales") 
   id BigInt @id @default(autoincrement())
   product Products? @relation(fields: [productId], references: [id])
   productId Int?
   sale Sales? @relation(fields: [saleId], references: [id])
   saleId BigInt?
   quantity Int
+  price_unit Decimal
   total Decimal
   active Boolean @default(true)
 }

@@ -42,11 +42,12 @@ CREATE TABLE `sales` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `produs_on_sales` (
+CREATE TABLE `products_on_sales` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `productId` INTEGER NULL,
     `saleId` BIGINT NULL,
     `quantity` INTEGER NOT NULL,
+    `price_unit` DECIMAL(65, 30) NOT NULL,
     `total` DECIMAL(65, 30) NOT NULL,
     `active` BOOLEAN NOT NULL DEFAULT true,
 
@@ -66,10 +67,10 @@ CREATE TABLE `returned_products` (
 ALTER TABLE `products` ADD CONSTRAINT `products_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `produs_on_sales` ADD CONSTRAINT `produs_on_sales_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `products_on_sales` ADD CONSTRAINT `products_on_sales_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `produs_on_sales` ADD CONSTRAINT `produs_on_sales_saleId_fkey` FOREIGN KEY (`saleId`) REFERENCES `sales`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `products_on_sales` ADD CONSTRAINT `products_on_sales_saleId_fkey` FOREIGN KEY (`saleId`) REFERENCES `sales`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `returned_products` ADD CONSTRAINT `returned_products_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
