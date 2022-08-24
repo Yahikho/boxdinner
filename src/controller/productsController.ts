@@ -4,6 +4,7 @@ import { Categories, Products } from "@prisma/client";
 import { 
     getProducts as getProductsService, 
     getProduct as getProductService,
+    getProductCode as getProductCodeSerive, 
     createProduct as createProductService,
     updateProduct as updateProductService,
     getProductByName as getProductByNameService,
@@ -18,12 +19,21 @@ import { roudedPrice } from "../utils/roudedPrices";
 export const getProducts = async (_req:Request, res:Response) => {
     try{
         const products = await getProductsService();
-        res.status(200);
-        res.json({
-            response: true,
-            message : 'true',
-            data: products
-        });
+        if(products.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message : 'true',
+                data: products
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message : 'No hay productos para ese codigo',
+            });
+        }
+        
     }catch(Error){
         res.status(500)
         .json({
@@ -37,12 +47,21 @@ export const getProduct = async (req: Request, res: Response) => {
     try{
         const id = req.params.id
         const product = await getProductService(Number(id))
-        res.status(400);
-        res.json({
-            response: true,
-            message : "true",
-            data: product
-        });
+        if(product.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message : "true",
+                data: product
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message : "No hay productos para ese codigo",
+            });
+        }
+        
     }catch(Error){
         res.status(500)
         .json({
@@ -52,6 +71,34 @@ export const getProduct = async (req: Request, res: Response) => {
     }
 }
 
+
+export const getProductCode = async (req: Request, res: Response) => {
+    try{
+        const code = req.params.code
+        const product = await getProductCodeSerive(code)
+        if(product.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message : "true",
+                data: product
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message : "No hay productos para ese codigo",
+            });
+        }
+        
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+}
 export const createProduct = async (req: Request, res: Response) => {
     try{
         const body: Products = req.body;

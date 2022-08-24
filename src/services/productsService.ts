@@ -14,6 +14,14 @@ export const getProduct = async (id: number): Promise<Products[]> => {
     });
 }
 
+export const getProductCode = async (code: string): Promise<Products[]> => {
+    return await prisma.products.findMany({
+        where:{
+            code
+        }
+    });
+}
+
 export const createProduct = async (data: Products, prices: any): Promise<Products> => {
     return await prisma.products.create({
         data: {

@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import routerCategories from './routes/categoriesRouter';
 import routerProducts from './routes/productsRouter';
 import routerSales from './routes/salesRouter';
@@ -12,6 +13,10 @@ const PORT = process.env.PORT;
 
 //middlewares
 app.use(express.json());
+app.use(cors({
+    origin: "*"
+}))
+
 
 //Routes
 app.use(routerCategories);
