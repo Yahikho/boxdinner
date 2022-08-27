@@ -1,13 +1,99 @@
 import {Products, ProductsOnSales, Sales } from "@prisma/client";
 import { Request, Response } from "express";
+import { SalesByCategory } from "../models/productsModel"
 import { 
     createSale as createSaleService,
     cancelSale as cancelSaleService,
+    getSalesDay as getSalesDaySerivice,
+    getSalesBetween as getSalesBetweenService,
+    salesByCategory as salesByCategoryService
 } from "../services/salesServices";
 import { getProductsOnSales } from "../controller/productsOnSalesController"
 import { updateProductBySale as updateProductBySaleService,
     getProduct as getProductService
 } from "../services/productsService";
+
+export const getSalesDay = async (_req:Request, res:Response) => {
+    try{
+        const dateNow = generateDateNow();
+        const sales: Sales[] = await getSalesDaySerivice(dateNow);
+        if(sales.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message: "true",
+                data: toJson(sales)
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message: "No hay datos.",
+            });
+        }
+    }catch(Error){
+            res.status(400)
+            .json({
+                response: false,
+                message: "Ocurrio un error.",
+            });
+    }
+}
+
+export const salesByCategoryDay = async(_req:Request, res:Response) => {
+    try{
+        const dateNow = generateDateNow();
+        const salesByCategory: SalesByCategory[] = await salesByCategoryService(dateNow);
+        if(salesByCategory.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message: "true",
+                data: salesByCategory
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message: "No hay datos.",
+            });
+        }
+    }catch(Error){
+            res.status(400)
+            .json({
+                response: false,
+                message: "Ocurrio un error.",
+            });
+    }
+}
+
+export const getSalesBetween = async (req:Request, res:Response) => {
+    try{
+        const initial = req.body.initial;
+        const finish = req.body.finish;
+        const sales: Sales[] = await getSalesBetweenService(initial, finish);
+        if(sales.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message: "true",
+                data: toJson(sales)
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message: "No hay datos.",
+            });
+        }
+    }catch(Error){
+            res.status(400)
+            .json({
+                response: false,
+                message: "Ocurrio un error.",
+            });
+    }
+}
 
 export const cancelSale = async (req:Request, res:Response) => {
     try{
@@ -77,3 +163,16 @@ async function updatePrices(productsOnSales: ProductsOnSales[], active: boolean)
     return productsUp;
     
 }
+
+export const  toJson = (data: any) => {
+    return JSON.stringify(data, (_, v) => typeof v === 'bigint' ? `${v}n` : v)
+        .replace(/"(-?\d+)n"/g, (_, a) => a);
+}
+
+const generateDateNow = () => {
+    const timeElapsed = Date.now();
+    const today = new Date(timeElapsed);
+    const newD = today.toLocaleDateString().split("/")
+    return `${newD[2]}/${newD[0]}/${newD[1]}`;
+}
+

@@ -4,3 +4,8 @@ export interface Product {
     price_sale: number
     total : number
 }
+
+export interface SalesByCategory{
+    name: string,
+    total: number
+}

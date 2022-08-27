@@ -35,7 +35,8 @@ CREATE TABLE `products` (
 CREATE TABLE `sales` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `active` BOOLEAN NOT NULL DEFAULT true,
-    `payment` INTEGER NOT NULL,
+    `payment` INTEGER NOT NULL DEFAULT 0,
+    `total` INTEGER NOT NULL DEFAULT 0,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `update_at` DATETIME(3) NULL,
 

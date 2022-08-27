@@ -14,8 +14,9 @@ import { updatePayment as  updatePaymentService } from "../services/salesService
 export const createProductsOnSales = async (req:Request, res:Response) => {
     try{
         const payment = req.body.payment;
+        const total = req.body.total;
         const sale = await createSaleController();
-        await updatePaymentService(sale.id, payment);
+        await updatePaymentService(sale.id, payment, total);
         if(sale.id > 0){
             const products: Product[] = req.body.products
             const sales = await createProductsOneToOneSales(sale.id, products);

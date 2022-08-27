@@ -17,7 +17,8 @@ export const getProduct = async (id: number): Promise<Products[]> => {
 export const getProductCode = async (code: string): Promise<Products[]> => {
     return await prisma.products.findMany({
         where:{
-            code
+            code,
+            active: true
         }
     });
 }
@@ -111,6 +112,28 @@ export const updateProductBySale = async (id: number, quantity: number): Promise
         },
         data:{
             quantity_unit: quantity
+        }
+    });
+}
+
+export const productsByCodeOrName = async (value: string):Promise<Products[]>=> {
+    return prisma.products.findMany({
+        where:{
+            OR: [
+                {
+                    name : {
+                        contains: value
+                    }
+                },
+                {
+                    code: {
+                        contains: value
+                    }
+                },
+            ]
+        },
+        include: {
+            categories: true
         }
     });
 }

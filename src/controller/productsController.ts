@@ -11,7 +11,8 @@ import {
     subtractQuantityProduct as subtractQuantityProductService,
     addQuantityProduct as addQuantityProductService,
     getProductsByCaregory as getProductsByCaregoryService,
-    updateProductByCategory as updateProductByCategoryService
+    updateProductByCategory as updateProductByCategoryService,
+    productsByCodeOrName as productsByCodeOrNameService
 } from "../services/productsService";
 import { getCategory as getCategoryService } from "../services/categoriesService";
 import { roudedPrice } from "../utils/roudedPrices";
@@ -71,6 +72,33 @@ export const getProduct = async (req: Request, res: Response) => {
     }
 }
 
+export const productsByCodeOrName = async(req: Request, res: Response) => {
+    try{
+        const value = req.body.value
+        const products = await productsByCodeOrNameService(value)
+        if(products.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message : "true",
+                data: products
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message : "No hay productos para ese codigo",
+            });
+        }
+        
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+}
 
 export const getProductCode = async (req: Request, res: Response) => {
     try{
