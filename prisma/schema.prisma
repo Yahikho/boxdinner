@@ -43,6 +43,7 @@ model Sales{
   @@map(name : "sales")
   id BigInt @id @default(autoincrement())
   active Boolean @default(true)
+  payment Int
   create_at DateTime @default(now())
   update_at DateTime? @updatedAt
   sales ProductsOnSales[]

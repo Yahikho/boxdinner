@@ -8,6 +8,7 @@ import { getProductsOnSales } from "../controller/productsOnSalesController"
 import { updateProductBySale as updateProductBySaleService,
     getProduct as getProductService
 } from "../services/productsService";
+
 export const cancelSale = async (req:Request, res:Response) => {
     try{
         const id = req.params.id;

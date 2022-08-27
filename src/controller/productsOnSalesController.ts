@@ -8,11 +8,14 @@ import {
 } from "../services/productsOnSalesService";
 import { getProduct as getProductService } from "../services/productsService";
 import { createSale as createSaleController} from "../controller/salesController";
-import { subtractQuantityProduct, addQuantityProduct } from "../controller/productsController"
+import { subtractQuantityProduct, addQuantityProduct } from "../controller/productsController";
+import { updatePayment as  updatePaymentService } from "../services/salesServices";
 
 export const createProductsOnSales = async (req:Request, res:Response) => {
     try{
+        const payment = req.body.payment;
         const sale = await createSaleController();
+        await updatePaymentService(sale.id, payment);
         if(sale.id > 0){
             const products: Product[] = req.body.products
             const sales = await createProductsOneToOneSales(sale.id, products);
@@ -102,9 +105,8 @@ export const getProductsOnSales = async (saleIs: number, active: boolean) => {
 async function createProductsOneToOneSales(id: bigint, products: Product[]){
     const productsOnSales: ProductsOnSales[] = [];
     await Promise.all(products.map(async (element) => {
-        const product = await getProductService(element.productId);
-        const priceUnit = product[0].price_sale;
-        const total = Number(product[0].price_sale) * element.quantity;
+        const priceUnit = element.price_sale
+        const total = priceUnit * element.quantity;
         const productSale: ProductsOnSales =  await createProductsOnSalesService(id, element, Number(priceUnit), total)
         const updateQuantityProduct: boolean = await subtractQuantityByProduct(element.productId, element.quantity);
         if(updateQuantityProduct){
