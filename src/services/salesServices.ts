@@ -59,3 +59,12 @@ export const salesByCategory = async (initial: string): Promise<SalesByCategory[
     where s.create_at > ${initial}
     GROUP by c.name `;
 }
+
+export const salesByCategoryDateBetween = async (initial: string, finish: string): Promise<SalesByCategory[]> => {
+    return await prisma.$queryRaw`SELECT c.name, sum(pos.total) as total from products_on_sales pos 
+    inner join sales s on pos.saleId = s.id 
+    inner join products p on pos.productId = p.id
+    inner join categories c on p.categoryId = c.id
+    where s.create_at BETWEEN  ${initial} and ${finish}
+    GROUP by c.name `;
+}

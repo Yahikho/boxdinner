@@ -6,7 +6,8 @@ import {
     cancelSale as cancelSaleService,
     getSalesDay as getSalesDaySerivice,
     getSalesBetween as getSalesBetweenService,
-    salesByCategory as salesByCategoryService
+    salesByCategory as salesByCategoryService,
+    salesByCategoryDateBetween as salesByCategoryDateBetweenService
 } from "../services/salesServices";
 import { getProductsOnSales } from "../controller/productsOnSalesController"
 import { updateProductBySale as updateProductBySaleService,
@@ -50,6 +51,34 @@ export const salesByCategoryDay = async(_req:Request, res:Response) => {
                 response: true,
                 message: "true",
                 data: salesByCategory
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message: "No hay datos.",
+            });
+        }
+    }catch(Error){
+            res.status(400)
+            .json({
+                response: false,
+                message: "Ocurrio un error.",
+            });
+    }
+}
+
+export const salesByCategoryDateBetween = async (req:Request, res:Response) => {
+    try{
+        const initial = req.body.initial;
+        const finish = req.body.finish;
+        const salesByCategoryBetween: SalesByCategory[] = await salesByCategoryDateBetweenService(initial, finish);
+        if(salesByCategoryBetween.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message: "true",
+                data: salesByCategoryBetween
             });
         }else{
             res.status(200)
