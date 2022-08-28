@@ -9,3 +9,9 @@ export interface SalesByCategory{
     name: string,
     total: number
 }
+
+export  interface ProducsBySale{
+    name: string,
+    quantity: number,
+    total: number
+}

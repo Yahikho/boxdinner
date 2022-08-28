@@ -7,7 +7,8 @@ import {
     getSalesDay as getSalesDaySerivice,
     getSalesBetween as getSalesBetweenService,
     salesByCategory as salesByCategoryService,
-    salesByCategoryDateBetween as salesByCategoryDateBetweenService
+    salesByCategoryDateBetween as salesByCategoryDateBetweenService,
+    lastSale as lastSaleService
 } from "../services/salesServices";
 import { getProductsOnSales } from "../controller/productsOnSalesController"
 import { updateProductBySale as updateProductBySaleService,
@@ -132,7 +133,7 @@ export const cancelSale = async (req:Request, res:Response) => {
         const productsOnSales = await getProductsOnSales(Number(sale.id), true) 
         if(sale.id > 0){
             if(sale.active){
-                const products = await updatePrices(productsOnSales, true);
+                const products = await updatePrices(productsOnSales, false);
                 res.status(201)
                 .json({
                     response: true,
@@ -140,7 +141,7 @@ export const cancelSale = async (req:Request, res:Response) => {
                     data: products
                 });
             }else{
-                const products = await updatePrices(productsOnSales, false);
+                const products = await updatePrices(productsOnSales, true);
                 res.status(201)
                 .json({
                     response: true,
@@ -161,6 +162,32 @@ export const cancelSale = async (req:Request, res:Response) => {
             response : false,
             message : `No se pudo realizar la petición, error => ${Error}`
         });
+    }
+}
+
+export const lastSale = async (_req:Request, res:Response) => {
+    try{
+        const sales: Sales[] = await lastSaleService();
+        if(sales.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message: "true",
+                data:sales
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message: "No hay datos.",
+            });
+        }
+    }catch(Error){
+            res.status(400)
+            .json({
+                response: false,
+                message: "Ocurrio un error.",
+            });
     }
 }
 

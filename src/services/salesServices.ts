@@ -4,11 +4,11 @@ import { SalesByCategory } from "../models/productsModel"
 const prisma: PrismaClient = new PrismaClient();
 
 export const getSalesDay = async (initial: string): Promise<Sales[]> => {
-    return await prisma.$queryRaw`select * from sales s where create_at > ${initial}`;
+    return await prisma.$queryRaw`select * from sales s where create_at > ${initial} order by create_at desc`;
 }
 
 export const getSalesBetween = async (initial: string, finish: string): Promise<Sales[]> => {
-    return await prisma.$queryRaw`select * from sales s where create_at between ${initial} and ${finish}`;
+    return await prisma.$queryRaw`select * from sales s where create_at between ${initial} and ${finish} order by create_at desc`;
 }
 
 export const getSale = async (id: bigint): Promise<Sales[]> => {
@@ -57,7 +57,9 @@ export const salesByCategory = async (initial: string): Promise<SalesByCategory[
     inner join products p on pos.productId = p.id
     inner join categories c on p.categoryId = c.id
     where s.create_at > ${initial}
-    GROUP by c.name `;
+    and s.active = 1
+    and pos.active = 1
+    GROUP by c.name`;
 }
 
 export const salesByCategoryDateBetween = async (initial: string, finish: string): Promise<SalesByCategory[]> => {
@@ -66,5 +68,11 @@ export const salesByCategoryDateBetween = async (initial: string, finish: string
     inner join products p on pos.productId = p.id
     inner join categories c on p.categoryId = c.id
     where s.create_at BETWEEN  ${initial} and ${finish}
-    GROUP by c.name `;
+    and s.active = 1
+    and pos.active = 1
+    GROUP by c.name`;
+}
+
+export const lastSale = async ():Promise<Sales[]>  => {
+    return await prisma.$queryRaw`SELECT  payment, total  from sales s order by id DESC limit 1`;
 }

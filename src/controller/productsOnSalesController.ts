@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { Product } from "../models/productsModel";
+import { Product, ProducsBySale } from "../models/productsModel";
 import { Products, ProductsOnSales } from "@prisma/client";
 import { 
     createProductsOnSales as createProductsOnSalesService,
     cancelProduct as cancelProductService,
-    getProductsOnSales as getProductsOnSalesService
+    getProductsOnSales as getProductsOnSalesService,
+    getProducBySales as getProducBySalesService
 } from "../services/productsOnSalesService";
 import { getProduct as getProductService } from "../services/productsService";
 import { createSale as createSaleController} from "../controller/salesController";
@@ -103,6 +104,33 @@ export const getProductsOnSales = async (saleIs: number, active: boolean) => {
     return await getProductsOnSalesService(saleIs, active);
 }
 
+export const getProducBySales = async (req:Request, res:Response) => {
+    try{
+        const saleId = req.params.id
+        const producsBySale: ProducsBySale[] = await getProducBySalesService(BigInt(saleId));
+        if(producsBySale.length > 0){
+            res.status(200)
+            .json({
+                response: true,
+                message : "true",
+                data: toJson(producsBySale)
+            });
+        }else{
+            res.status(200)
+            .json({
+                response: false,
+                message : "No hay productos para esa venta, raro",
+            });
+        }
+        
+    }catch(Error){
+        res.status(500)
+        .json({
+            response : false,
+            message : `No se pudo realizar la petición, error => ${Error}`
+        });
+    }
+}
 async function createProductsOneToOneSales(id: bigint, products: Product[]){
     const productsOnSales: ProductsOnSales[] = [];
     await Promise.all(products.map(async (element) => {

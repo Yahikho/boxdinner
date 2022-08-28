@@ -1,5 +1,5 @@
 import { ProductsOnSales, PrismaClient } from "@prisma/client";
-import { Product } from "../models/productsModel";
+import { Product, ProducsBySale} from "../models/productsModel";
 
 const prisma: PrismaClient = new PrismaClient();
 
@@ -34,4 +34,10 @@ export const getProductsOnSales = async (saleId: number, active: boolean): Promi
             active
         }
     });
+}
+
+export const getProducBySales = async(saleId: bigint): Promise<ProducsBySale[]> => {
+    return await prisma.$queryRaw`SELECT p.name, pos.quantity, pos.price_unit, pos.active, pos.id from products_on_sales pos 
+    inner join products p on pos.productId = p.id
+    where pos.saleId = ${saleId}`;
 }
