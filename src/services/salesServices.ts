@@ -74,5 +74,5 @@ export const salesByCategoryDateBetween = async (initial: string, finish: string
 }
 
 export const lastSale = async ():Promise<Sales[]>  => {
-    return await prisma.$queryRaw`SELECT  payment, total  from sales s order by id DESC limit 1`;
+    return await prisma.$queryRaw`SELECT  payment, total  from sales s where active = 1 order by id DESC limit 1`;
 }
