@@ -23,7 +23,9 @@ export const createSale = async (active: boolean): Promise<Sales> => {
     return await prisma.sales.create({
         data: {
             active,
-            payment: 0
+            payment: 0,
+            create_at: new Date(),
+            update_at: new Date()
         }
     });
 }
@@ -31,7 +33,8 @@ export const createSale = async (active: boolean): Promise<Sales> => {
 export const cancelSale = async (id: number, active: boolean): Promise<Sales>  => {
     return await prisma.sales.update({
         data: {
-            active
+            active,
+            update_at: new Date()
         },
         where: {
             id
@@ -43,7 +46,8 @@ export const updatePayment = async (id: bigint, payment: number, total: number):
     return await prisma.sales.update({
         data: {
             payment,
-            total
+            total,
+            update_at: new Date()
         },
         where: {
             id,

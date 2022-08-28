@@ -228,6 +228,7 @@ export const generatePrices = async (product: Products) => {
     const prices = [];
     const category: Categories[] = await getCategoryService(product.categoryId);
     const iva = generatePorIVA(Number(category[0].iva));
+    
     const priceIva: number =  Number(product.arrival_price) + (Number(product.arrival_price) * iva);
     const rouded = roudedPrice(priceIva);
     prices.push(Math.round(priceIva), Math.round(rouded));
@@ -236,7 +237,12 @@ export const generatePrices = async (product: Products) => {
 }
 
 export const generatePorIVA = (iva: number): number => {
-    const converIva =  Number(`0.${iva.toString()}`);
+    let converIva = 0;
+    if(iva.toString().length > 1){
+        converIva =  Number(`0.${iva.toString()}`);
+    }else{
+        converIva =  Number(`0.0${iva.toString()}`);
+    }
     return converIva;
 }
 

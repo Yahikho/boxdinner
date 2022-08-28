@@ -18,7 +18,7 @@ export const getProductCode = async (code: string): Promise<Products[]> => {
     return await prisma.products.findMany({
         where:{
             code,
-            active: true
+            active: true,
         }
     });
 }
@@ -33,6 +33,8 @@ export const createProduct = async (data: Products, prices: any): Promise<Produc
             price_iva: prices[0],
             price_sale: prices[1],
             categoryId: data.categoryId,
+            create_at: new Date(),
+            update_at: new Date()
         }
     });
 }
@@ -66,7 +68,8 @@ export const getProductByName = async (name: string): Promise<Products[]> => {
 export const subtractQuantityProduct = async (id: number, quantity: number): Promise<Products> => {
     return await prisma.products.update({
         data: {
-            quantity_unit: quantity
+            quantity_unit: quantity,
+            create_at: new Date()
         },
         where: {
             id
@@ -77,7 +80,8 @@ export const subtractQuantityProduct = async (id: number, quantity: number): Pro
 export const addQuantityProduct = async (id: number, quantity: number): Promise<Products> => {
     return await prisma.products.update({
         data: {
-            quantity_unit: quantity
+            quantity_unit: quantity,
+            update_at: new Date()
         },
         where: {
             id
@@ -101,6 +105,7 @@ export const updateProductByCategory = async (id: number, prices: any): Promise<
         data: {
             price_iva: prices[0],
             price_sale: prices[1],
+            update_at: new Date()
         }
     });
 }
@@ -111,7 +116,8 @@ export const updateProductBySale = async (id: number, quantity: number): Promise
             id
         },
         data:{
-            quantity_unit: quantity
+            quantity_unit: quantity,
+            update_at: new Date()
         }
     });
 }
@@ -137,6 +143,3 @@ export const productsByCodeOrName = async (value: string):Promise<Products[]>=> 
         }
     });
 }
-
-
-

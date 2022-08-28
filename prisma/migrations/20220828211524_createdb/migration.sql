@@ -4,8 +4,8 @@ CREATE TABLE `categories` (
     `name` VARCHAR(191) NOT NULL,
     `active` BOOLEAN NOT NULL DEFAULT true,
     `iva` INTEGER NOT NULL DEFAULT 10,
-    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `update_at` DATETIME(3) NULL,
+    `create_at` DATETIME(3) NOT NULL,
+    `update_at` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `categories_id_key`(`id`),
     UNIQUE INDEX `categories_name_key`(`name`),
@@ -23,8 +23,8 @@ CREATE TABLE `products` (
     `price_sale` DECIMAL(65, 30) NOT NULL,
     `active` BOOLEAN NOT NULL DEFAULT true,
     `categoryId` INTEGER NOT NULL,
-    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `update_at` DATETIME(3) NULL,
+    `create_at` DATETIME(3) NOT NULL,
+    `update_at` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `products_code_key`(`code`),
     UNIQUE INDEX `products_name_key`(`name`),
@@ -37,8 +37,8 @@ CREATE TABLE `sales` (
     `active` BOOLEAN NOT NULL DEFAULT true,
     `payment` INTEGER NOT NULL DEFAULT 0,
     `total` INTEGER NOT NULL DEFAULT 0,
-    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `update_at` DATETIME(3) NULL,
+    `create_at` DATETIME(3) NOT NULL,
+    `update_at` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

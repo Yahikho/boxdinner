@@ -16,7 +16,13 @@ export const getCategory = async (id: number): Promise<Categories[]> => {
 
 export const createCategory = async (data :Categories): Promise<Categories> => {
     return await prisma.categories.create({
-        data
+        data :{
+            name: data.name,
+            active: data.active,
+            iva: data.iva,
+            create_at: new Date(),
+            update_at: new Date()
+        }
     });
 }
 
@@ -25,7 +31,12 @@ export const updateCategory = async (id: number, data : Categories): Promise<Cat
         where: {
             id
         },
-        data
+        data :{
+            name: data.name,
+            active: data.active,
+            iva: data.iva,
+            update_at: new Date()
+        }
     });
 }
 
@@ -36,3 +47,4 @@ export const getCategoryByName = async (name: string): Promise<Categories[]> => 
         }
     });
 }
+
